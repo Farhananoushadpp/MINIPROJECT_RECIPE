@@ -21,6 +21,25 @@ List<String> splitString(String input) {
   return input.split('.');
 }
 
+List<String> splitSearchQuery(String input) {
+    List<String> result = input.split(RegExp(r'[,\s]+'));
+  result.removeWhere((element) => element.isEmpty);
+
+  return result;
+}
+
 String removeSpacesAfterPeriod(String input) {
   return input.replaceAll(RegExp(r'\.\s+'), '.');
+}
+
+dynamic toLowerCaseConverter(dynamic input) {
+  if (input is List<String>) {
+    // If input is a List<String>
+    return input.map((item) => item.toLowerCase()).toList();
+  } else if (input is String) {
+    // If input is a String
+    return input.toLowerCase();
+  } else {
+    throw ArgumentError("Invalid input type. Expected List<String> or String.");
+  }
 }

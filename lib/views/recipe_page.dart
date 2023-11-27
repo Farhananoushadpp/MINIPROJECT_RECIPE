@@ -2,8 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:recipe_app/models/recipe_model.dart';
 import 'package:recipe_app/utils/string_functions.dart';
+import 'package:recipe_app/views/home.dart';
 import 'package:recipe_app/views/recipe_web_view.dart';
 import 'package:recipe_app/widgets/key_value_display.dart';
+import 'package:recipe_app/widgets/main_ingredients_widget.dart';
 import 'package:recipe_app/widgets/preparation_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -56,6 +58,27 @@ class RecipePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
+                  ],
+                ),
+              if (recipe?.mainIngredients?.isNotEmpty ?? false)
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    
+                    IngredientsWidget(
+                        ingredients:
+                            splitSearchQuery(recipe?.mainIngredients ?? ""),
+                        onTap: (ingredient) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Home(
+                                      searchQuery: ingredient,
+                                    )),
+                            (Route<dynamic> route) => false,
+                          );
+                        }),
+                        const SizedBox(height: 10),
                   ],
                 ),
               // Calorie Details

@@ -8,6 +8,7 @@ class RecipeModel {
   final String? dietaryPrefs;
   final String? ingredients;
   final String? recipeDetails;
+  final String? mainIngredients;
 
   RecipeModel({
     this.image,
@@ -19,6 +20,7 @@ class RecipeModel {
     this.dietaryPrefs,
     this.ingredients,
     this.recipeDetails,
+    this.mainIngredients,
   });
 
   factory RecipeModel.fromMap(Map<String, dynamic> parsedJson) {
@@ -39,6 +41,7 @@ class RecipeModel {
       dietaryPrefs: parsedJson["dietaryPrefs"],
       ingredients: parsedJson["ingredients"],
       recipeDetails: parsedJson["recipeDetails"],
+      mainIngredients: parsedJson["mainIngredients"],
     );
   }
 }

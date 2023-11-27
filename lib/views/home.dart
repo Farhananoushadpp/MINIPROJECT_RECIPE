@@ -5,10 +5,14 @@ import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:recipe_app/models/recipe_model.dart';
+import 'package:recipe_app/utils/search_functions.dart';
+import 'package:recipe_app/utils/string_functions.dart';
 import 'package:recipe_app/views/recipe_page.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final String? searchQuery;
+
+  const Home({super.key, this.searchQuery});
   @override
   State<Home> createState() => _HomeState();
 }
@@ -25,6 +29,10 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    if (widget.searchQuery != null) {
+      textEditingController.text = widget.searchQuery ?? "";
+      fetchRecipes();
+    }
   }
 
   @override
@@ -188,12 +196,12 @@ class _HomeState extends State<Home> {
       recipes!.clear();
     }
 
-    String? searchQuery;
+    List<String>? searchQuery;
     setState(() {
       _loading = true;
     });
     if (textEditingController.text.isNotEmpty) {
-      searchQuery = textEditingController.text;
+      searchQuery = splitSearchQuery(textEditingController.text);
     }
     await db.collection("recipe").get().then((event) {
       for (var doc in event.docs) {
@@ -205,7 +213,7 @@ class _HomeState extends State<Home> {
           if (searchQuery == null) {
             recipes!.add(recipeModel);
           } else {
-            if (doc.id == searchQuery) {
+            if (isMatchFound(searchQuery, doc.data()["mainIngredients"])) {
               recipes!.add(recipeModel);
             }
           }
@@ -254,7 +262,13 @@ class RecipeTile extends StatefulWidget {
   final String? title, desc, imgUrl, url;
   final RecipeModel? recipeModel;
 
-  const RecipeTile({super.key, this.title, this.desc, this.imgUrl, this.url, this.recipeModel});
+  const RecipeTile(
+      {super.key,
+      this.title,
+      this.desc,
+      this.imgUrl,
+      this.url,
+      this.recipeModel});
 
   @override
   State<RecipeTile> createState() => _RecipeTileState();
@@ -280,6 +294,7 @@ class _RecipeTileState extends State<RecipeTile> {
             margin: const EdgeInsets.all(8),
             child: Stack(
               children: <Widget>[
+                if(widget.imgUrl?.isNotEmpty?? false)
                 Image.network(
                   widget.imgUrl ?? "",
                   height: 200,
